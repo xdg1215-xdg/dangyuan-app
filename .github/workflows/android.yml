@@ -10,6 +10,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     timeout-minutes: 30
+    working-directory: /home/runner/work/dangyuan-app/dangyuan-app
 
     steps:
       - name: Checkout code
@@ -30,25 +31,20 @@ jobs:
         uses: android-actions/setup-android@v3
 
       - name: Install dependencies
-        run: |
-          cd dangyuan-app
-          npm install
+        run: npm install
 
       - name: Build web app
-        run: |
-          cd dangyuan-app
-          npm run build
+        run: npm run build
 
       - name: Add Android platform
         run: |
-          cd dangyuan-app
           npm install @capacitor/cli @capacitor/core @capacitor/android
           npx cap add android || echo "Android platform already exists"
           npx cap sync android
 
       - name: Build debug APK
         run: |
-          cd dangyuan-app/android
+          cd android
           chmod +x ./gradlew
           ./gradlew assembleDebug
 
@@ -56,5 +52,5 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: dangyuan-apk
-          path: dangyuan-app/android/app/build/outputs/apk/debug/app-debug.apk
+          path: android/app/build/outputs/apk/debug/app-debug.apk
           retention-days: 7
